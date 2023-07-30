@@ -20,15 +20,25 @@ TB_orddetai as
 
 TB_ORDRS AS 
 (
-
     select 
         ord.order_date
         ,ord.order_id
+        , cs.company_name as customer
+        , em.name as employee
+        , em.age
+        , em.lengthofservice
 
     FROM {{source('sources','orders')}}  AS ORD
     LEFT JOIN {{ref('customers')}}  AS CS on (ord.customer_id = cs.customer_id)
-    LEFT JOIN {{ref('customers')}}  AS EM on (ord.employee_id = em.employees)
-    LEFT JOIN {{source('sources','orders')}}  AS SH ON (ord.ship_via = shipper_id)
+    LEFT JOIN {{ref('employees')}}  AS EM on (ord.employee_id = em.employee_id)
+    LEFT JOIN {{source('sources','shippers')}}  AS SH ON (ord.ship_via = sh.shipper_id)
+), tb_finaljoin as 
+(
+    SELECT od.*, ord.order_date, ord.customer, ord.employee, ord.age, ord.lengthofservice
+    FROM TB_orddetai  as od
+    INNER JOIN TB_ORDRS as ord on (od.order_id = ord.order_id)
 )
 
-SELECT * FROM TB_ORDRS
+SELECT * 
+FROM tb_finaljoin
+limit 3000
