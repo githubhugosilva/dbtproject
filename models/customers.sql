@@ -1,8 +1,8 @@
+--- comit 17:46
+
 /*
 SELECT *, ROW_NUMBER () OVER( partition BY company_name ORDER BY company_name)
 FROM {{source('sources','customers')}}
-
-
 */
 
 with TB_markup as
